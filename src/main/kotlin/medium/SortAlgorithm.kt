@@ -91,6 +91,7 @@ object SortAlgorithm {
     }
 
     /**
+     * 归并排序：将两个有序的列表合并称为归并
      * 归并排序,从大到小
      */
     fun mergeSort(arr: IntArray) {
@@ -130,66 +131,51 @@ object SortAlgorithm {
         }
     }
 
-    // 归并排序：将两个有序的列表合并称为归并
-//    fun mergeSort(array: Array<Int>, startIndex: Int = 0, endIndex: Int = array.size - 1) {
-//        if (array.isEmpty() || array.size == 1 || startIndex == endIndex || endIndex - startIndex == 1) {
-//            return
-//        }
-//        // 将2个列表排序
-//        val middleIndex = (startIndex + endIndex) / 2
-//        mergeSort(array, startIndex, middleIndex)
-//        mergeSort(array, middleIndex, endIndex)
-//
-//        // 合并2个有序列表
-//        val startLen = middleIndex - startIndex
-//        val endLen = endIndex - middleIndex
-//        var beginIndex = startIndex
-//        var finishIndex = middleIndex
-//        if (startLen < endLen) {
-//            mergeTwoSortedList(array, middleIndex, endIndex, startIndex, middleIndex)
-//        }else{
-//            mergeTwoSortedList(array, startIndex, middleIndex, middleIndex, endIndex)
-//        }
-//    }
-//
-//    /**
-//     * 需要保证长列表在前，短列表在后
-//     */
-//    fun mergeTwoSortedList(array: Array<Int>, startIndex1: Int, endIndex1: Int, startIndex2: Int, endIndex2: Int) {
-//        val copyArray = array.copyOf()
-//        var array1Index = startIndex1
-//        var array2Index = startIndex2
-//
-//        var currentIsFirst = true
-//        for (i in startIndex1..endIndex1) {
-//            if (array2Index <= endIndex2) {
-//                var otherValue = 0
-//                val mainValue = if (currentIsFirst) {
-//                    otherValue = copyArray[array2Index]
-//                    copyArray[array1Index++]
-//                } else {
-//                    otherValue = copyArray[array1Index]
-//                    copyArray[array2Index++]
-//                }
-//                val min = if (otherValue < mainValue) {
-//                    currentIsFirst = false
-//                    otherValue
-//                } else {
-//                    mainValue
-//                }
-//                array[i] = min
-//            } else {
-//                array[i] = copyArray[array1Index++]
-//            }
-//        }
-//    }
+    /**
+     * 快速排序: 将列表用一个基准分为左右两部分，左边的数都比基准小，右边的数都比基准大，
+     * 然后再对左右两个列表再次快排直到所有列表都排好了顺序
+     */
+    fun quickSort(array: Array<Int>, startIndex: Int = 0, endIndex: Int = array.size - 1) {
+        if (array.isEmpty() || array.size == 1 || startIndex >= endIndex) {
+            return
+        }
+        // 将数组分为左右两边，dividerIndex左边都比dividerIndex对应的值大，右边都比他小
+        val dividerIndex = divisionArray(array, endIndex, startIndex)
+        // 对左边的数组再次分割
+        quickSort(array, startIndex, dividerIndex - 1)
+        // 对右边的数组再次分割
+        quickSort(array, dividerIndex + 1, endIndex)
+    }
+
+    // 将数组分为两部分，左边都比右边小，返回处于左右两边的index
+    private fun divisionArray(array: Array<Int>, endIndex: Int, startIndex: Int): Int {
+        val standardValue = array[endIndex]
+        var leftIndex = startIndex
+        var rightIndex = endIndex
+        while (leftIndex < rightIndex) {
+            // 先从左往右，找到一个大于standardValue的值
+            while (leftIndex < rightIndex && array[leftIndex] <= standardValue) {
+                leftIndex++
+            }
+            // 将找到的这个较大值挪到standardIndex的位置
+            array[rightIndex] = array[leftIndex]
+
+            // 再从右往左，找到一个小于standardValue的值
+            while (leftIndex < rightIndex && array[rightIndex] >= standardValue) {
+                rightIndex--
+            }
+            array[leftIndex] = array[rightIndex]
+        }
+        // leftIndex 和 rightIndex指向同一个点了，将该点赋值为standardValue
+        array[leftIndex] = standardValue
+        return leftIndex
+    }
 
     @JvmStatic
     fun main(args: Array<String>) {
         val testCaseList = arrayListOf(
-
+            "3,2,3,1,2",
             "3,2,3,1,2,4,5,5,6",
-            "3,2,3,-1,2,4,-5,5,-6",
             "3,2,3,-1,2,4,-5,5,-6",
             "3,2,3,1,2,4,5,5,6",
             "3,3,3,3,3",
@@ -197,8 +183,7 @@ object SortAlgorithm {
 
         testCaseList.forEach {
             val array = it.split(",").map { it.toInt() }.toTypedArray()
-//            mergeTwoSortedList(array, 0, array.size / 2 + 1, array.size / 2 + 1, array.size)
-            mergeSort(array.toIntArray())
+            quickSort(array)
             println("${it} -> ${array.joinToString(",")} ")
         }
     }
