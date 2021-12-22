@@ -1,8 +1,8 @@
 package easy
 
-import ListNode
-import Utils.createLinkedList
-import Utils.printLinkedList
+import utils.ListNode
+import utils.Utils.createLinkedList
+import utils.Utils.printLinkedList
 
 /*
 * @description: 21. 合并两个有序链表

@@ -1,3 +1,6 @@
+import utils.ListNode
+import utils.Utils
+
 object IntersectionOfTwoLinkedLists {
 
     fun getIntersectionNode(headA: ListNode?, headB: ListNode?): ListNode? {

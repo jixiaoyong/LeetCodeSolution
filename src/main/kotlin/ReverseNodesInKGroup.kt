@@ -26,11 +26,11 @@ k是一个正整数，它的值小于或等于链表的长度。
 
 /**
  * Example:
- * var li = ListNode(5)
+ * var li = utils.ListNode(5)
  * var v = li.`val`
  * Definition for singly-linked list.
- * class ListNode(var `val`: Int) {
- *     var next: ListNode? = null
+ * class utils.ListNode(var `val`: Int) {
+ *     var next: utils.ListNode? = null
  * }
  */
 class Solution {
