@@ -227,11 +227,17 @@ object TreeTraverse {
 
 
 fun main() {
-    val nodeTree = Utils.createTreeFromString("[3,9,20,4,8,15,7,5,6,22,11,19,30,1,90]")
+    val nodeTree = Utils.createTreeFromString("[1,null,2]")
 
     println("层次遍历打印：\n${TreeTraverse.bfsTraversePrint(nodeTree)}")
 
     println("层次遍历：${TreeTraverse.bfsTraverse(nodeTree)}")
+
+    val inorderTraversal = TreeTraverse.inorderTraversalRecursion(nodeTree)
+    println("中序遍历递归：${inorderTraversal}")
+
+    val preorderTraversalRecursion = TreeTraverse.preorderTraversalRecursion(nodeTree)
+    println("前序遍历递归：${preorderTraversalRecursion}")
 
 /*    // 后序
     val postorderTraversalRecursion = TreeTraverse.postorderTraversalRecursion(nodeTree)
