@@ -26,6 +26,29 @@ object LinkedListCycle {
         return compareLinkedList(head, head.next, 1)
     }
 
+    /**
+     * 判断两个链表是否相交之龟兔赛跑
+     * tortoise 每次只走一步，hare 每次走两步
+     * 当链表中有环存在时，由于二者速度不同，必然在某个地方相遇
+     * 否则，链表不存在环，相遇的地方为 null
+     */
+    fun tortoiseAndHare(head: ListNode?): Boolean {
+        if (head?.next == null) return false
+
+        var tortoise = head
+        var hare = head.next
+
+        while (tortoise != null && hare != null) {
+            if (tortoise == hare) return true
+            tortoise = tortoise.next
+            hare = hare.next?.next
+        }
+        return false
+    }
+
+    /**
+     * 判断两个链表是否相交
+     */
     private fun compareLinkedList(head: ListNode?, currentNode: ListNode?, step: Int): Boolean {
         if (currentNode == null) return false
 
@@ -47,5 +70,5 @@ fun main() {
     head.next?.next = ListNode(0)
     head.next?.next?.next = ListNode(-4)
     head.next?.next?.next?.next = head.next
-    println(LinkedListCycle.hasCycle(head))
+    println(LinkedListCycle.tortoiseAndHare(head))
 }
