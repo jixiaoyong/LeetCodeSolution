@@ -32,21 +32,28 @@ object LinkedListCycleII {
     /**
      * 快慢指针
      * 时间复杂度：O(n)，空间复杂度：O(1)
-     * 思路：fast和slow指针同时在链表中移动,slow每次移动1格，fast移动2格，必定相遇于一点，如果该点不是链表的末尾（即没有next），那么相遇的点就是在环中
-     * ![快慢指针相遇路程示意图](https://assets.leetcode-cn.com/solution-static/142/142_fig1.png)
-     * 设从链表起点到环入口的距离为a，相遇时slow到环入口走的距离为b，环剩下的长度为c
-     * 那么，在相遇的时候：
-     * fast走了：a+b+n(b+c)次
-     * slow走了：a+b次
-     * 又有fast同一时刻走过的节点数量是slow的2倍即：a+b+n(b+c) = 2(a+b)
-     * 则得出：a = n(b+c)-b = (n-1)(b+c)+c
-     * 即，两个相同速度的指针，A从链表head的走a,B从fast和slow相遇点刚好走了 (n-1)(b+c)+c，二者相遇于环的起点
+     * 思路参考：https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/linked-list-cycle-ii-kuai-man-zhi-zhen-shuang-zhi-/
+     * fast和slow指针同时在链表中移动,slow每次移动1格，fast移动2格，必定相遇于一点，如果该点不是链表的末尾（即没有next），那么相遇的点就是在环中
+     * 对于有环链表：A-*-*-*-*-*-*-*-*-B-*-*-*-*-*-|
+     *                               \-*-*-*-*-/
+     * 来说，假设由A到环入口B的距离为a，环的长度为b
+     * 当快慢指针在环内相遇时，slow走过的步数s，fast走过的步数f
+     * 那么转化为他们走过对应的节点数目：会有 f = s + nb，（即fast比slow多走了n圈环长度之后，二者相遇）
+     * 又因为fast速度是slow的2倍，所以f = 2s
+     * 由此得到：
+     * s = nb
+     * f = 2s
+     * 又已知，如果从链表的head开始走，只需要走a+nb步，则会到达环入口B
+     * 而slow现在已经走了nb步，也就是slow从他们相交的点开始走a步，就能到达环入口B
+     * 所以，设一个新的指针X从head开始走a步（X走到B点刚好需要a步），与此同时slow也从相交点开始走a步，二者会同时到达环入口B，此时相遇的点就是环的入口B
      *
      */
     fun detectCycleByGithub(head: ListNode?): ListNode? {
         if (head == null) return null
-        var slow = head
-        var fast = head
+
+        var slow = head // 慢指针,每次移动1格
+        var fast = head // 快指针,每次移动2格
+
         while (fast?.next != null && fast.next?.next != null) {
             slow = slow?.next
             fast = fast.next?.next
@@ -59,7 +66,7 @@ object LinkedListCycleII {
             // 快指针下个节点，或者下下个节点为null，没有环
             return null
         }
-        // 如果有环的话，则fast指针和slow相遇在环之中某个位置
+        // 如果有环的话，则fast指针和slow在同时走了a步之后，一定会相遇在环的入口
         slow = head
         while (slow != fast) {
             slow = slow?.next
