@@ -1,6 +1,6 @@
 package medium
 
-import kotlin.random.Random
+import java.util.*
 
 /*
 * @description: 912. Sort an Array
@@ -42,7 +42,7 @@ object SortAnArray {
         }
 
         // array size is 1
-        if (right == left&&right>0) {
+        if (right == left && right > 0) {
             return intArrayOf(nums[right])
         }
 
@@ -77,9 +77,9 @@ object SortAnArray {
         val randomIndex = if (leftNum >= rightNum) {
             if (leftNum <= midNum) {
                 left
-            } else if(midNum <= rightNum) {
+            } else if (midNum <= rightNum) {
                 right
-            }else{
+            } else {
                 midIndex
             }
         } else {
@@ -87,7 +87,7 @@ object SortAnArray {
                 right
             } else if (midNum <= leftNum) {
                 left
-            }else{
+            } else {
                 midIndex
             }
         }
@@ -99,12 +99,12 @@ object SortAnArray {
 
         while (i < j) {
             // 找到第一个小于基准的数
-           while (j>i){
-               if (nums[j] < pivot) {
-                   break
-               }
-               j--
-           }
+            while (j > i) {
+                if (nums[j] < pivot) {
+                    break
+                }
+                j--
+            }
 
             // 找到第一个大于基准的数
             while (i < j) {
@@ -171,24 +171,71 @@ object SortAnArray {
         }
     }
 
+    /**
+     * 堆排序
+     * 参考：https://blog.csdn.net/u010452388/article/details/81283998
+     */
+    fun heapSort(nums: IntArray): IntArray {
+
+        var right = nums.size - 1;
+        while (right >= 0) {
+            right = buildMaxHead(nums, right)
+        }
+
+        return nums
+    }
+
+    /**
+     * 构建最大堆
+     * 	Time Limit Exceeded
+     * 最大堆的定义：父节点的值大于子节点的值
+     * 构建最大堆的思路即：
+     * 将数组依次遍历，每个节点的数与他的父节点对比，如果父节点小于子节点，则交换位置，直到父节点大于子节点
+     * 这样就构建好了一个最大堆，堆的根节点就是最大值，将这个值放到数组最后，则数组剩下的length-1个数需要排序
+     * 这样子重复直到所有的数都拍好序
+     */
+    fun buildMaxHead(nums: IntArray, right: Int): Int {
+
+        for (index in 1..right) {
+            var currentIndex = index
+            var parentIndex = (currentIndex - 1) / 2
+
+            while (parentIndex >= 0 && nums[currentIndex] > nums[parentIndex]) {
+                swap(nums, currentIndex, parentIndex)
+                currentIndex = parentIndex
+                parentIndex = (currentIndex - 1) / 2
+            }
+        }
+
+        // 将最大堆的根节点放到最后
+        swap(nums, 0, right)
+        // 只有剩下的0~right-1个数需要排序
+        return right - 1
+    }
+
+
     @JvmStatic
     fun main(args: Array<String>) {
-        val nums = intArrayOf(-4,0,7,4,9,-5,-1,0,-7,-1)
+//        val nums = intArrayOf(-4, 0, 7, 4, 9, -5, -1, 0, -7, -1)
 //        val nums = intArrayOf(10, 2, 5, 3, 2, 8, 9, 7, 1, 4)
 //        val nums = intArrayOf(1, 2, 5, 3, 2, 8, 9, 7, 1, 4)
-//        val size  = 50000
-//        val nums = IntArray(size)
-//        var random =  Random(System.currentTimeMillis())
-//        for (i in 0 until size) {
-//            nums[i] = random.nextInt(size)
-//        }
+        val size = 50000
+        val nums = IntArray(size)
+        var random = Random(System.currentTimeMillis())
+        for (i in 0 until size) {
+            nums[i] = random.nextInt(size)
+        }
+        var numberCopy = nums.copyOf()
         val startTime = System.currentTimeMillis()
 //        for (i in 0 until 10000) {
 //            sortArray(nums)
 //        }
-        val result = sortArray(nums)
+        val result = heapSort(nums)
         val middleTime = System.currentTimeMillis()
-        println(result.joinToString(","))
+//        println(result.joinToString(","))
+
+        sortArray(numberCopy)
+        println(result.joinToString(",").equals(numberCopy.joinToString(",")))
         println("time: ${middleTime - startTime}")
 
 
