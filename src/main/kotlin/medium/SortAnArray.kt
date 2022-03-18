@@ -214,23 +214,73 @@ object SortAnArray {
     }
 
 
+    /*******LeetCode cn官方 堆排序 start ********/
+
+    fun sortArrayWithHeapSort(nums: IntArray): IntArray {
+        heapSortLC(nums)
+        return nums
+    }
+
+    fun heapSortLC(nums: IntArray) {
+        var len = nums.size - 1
+        buildMaxHeap(nums, len)
+        for (i in len downTo 1) {
+            swap(nums, i, 0)
+            len -= 1
+            maxHeapify(nums, 0, len)
+        }
+    }
+
+    fun buildMaxHeap(nums: IntArray, len: Int) {
+        for (i in len / 2 downTo 0) {
+            maxHeapify(nums, i, len)
+        }
+    }
+
+    fun maxHeapify(nums: IntArray, i: Int, len: Int) {
+        var i = i
+        while ((i shl 1) + 1 <= len) {
+            val lson = (i shl 1) + 1
+            val rson = (i shl 1) + 2
+            var large: Int
+            large = if (lson <= len && nums[lson] > nums[i]) {
+                lson
+            } else {
+                i
+            }
+            if (rson <= len && nums[rson] > nums[large]) {
+                large = rson
+            }
+            i = if (large != i) {
+                swap(nums, i, large)
+                large
+            } else {
+                break
+            }
+        }
+    }
+
+
+    /*******LeetCode cn 官方堆排序 end ********/
+
+
     @JvmStatic
     fun main(args: Array<String>) {
-//        val nums = intArrayOf(-4, 0, 7, 4, 9, -5, -1, 0, -7, -1)
+        val nums = intArrayOf(-4, 0, 7, 4, 9, -5, -1, 0, -7, -1)
 //        val nums = intArrayOf(10, 2, 5, 3, 2, 8, 9, 7, 1, 4)
 //        val nums = intArrayOf(1, 2, 5, 3, 2, 8, 9, 7, 1, 4)
-        val size = 50000
-        val nums = IntArray(size)
-        var random = Random(System.currentTimeMillis())
-        for (i in 0 until size) {
-            nums[i] = random.nextInt(size)
-        }
+//        val size = 50000
+//        val nums = IntArray(size)
+//        var random = Random(System.currentTimeMillis())
+//        for (i in 0 until size) {
+//            nums[i] = random.nextInt(size)
+//        }
         var numberCopy = nums.copyOf()
         val startTime = System.currentTimeMillis()
 //        for (i in 0 until 10000) {
 //            sortArray(nums)
 //        }
-        val result = heapSort(nums)
+        val result = sortArrayWithHeapSort(nums)
         val middleTime = System.currentTimeMillis()
 //        println(result.joinToString(","))
 
