@@ -63,7 +63,7 @@ object Utils {
      ** 从类似[5,4,8,11,null,13,4,7,2,null,null,5,1]的数组中生成一个tree
      */
     fun createTreeFromString(str: String): TreeNode? {
-        val treeValueList = str.trim().replace("[", "").replace("]", "").split(",").map { it.toIntOrNull() }
+        val treeValueList = str.replace(" ","").replace("[", "").replace("]", "").split(",").map { it.toIntOrNull() }
         if (str.isEmpty() || treeValueList.isEmpty()) {
             return null
         }
@@ -71,7 +71,8 @@ object Utils {
         val queue = LinkedList<TreeNode>()
         queue.offer(tree)
         var currentIndex = 0
-        while (currentIndex < treeValueList.size - 1) {
+        val treeValueListSize = treeValueList.size
+        while (currentIndex < treeValueListSize - 1) {
             val currentNode = queue.pop()
             if (currentNode.left == null && currentIndex + 1 < treeValueList.size) {
                 currentNode.left = treeValueList.get(++currentIndex).let { it?.let { it1 -> TreeNode(it1) } }
