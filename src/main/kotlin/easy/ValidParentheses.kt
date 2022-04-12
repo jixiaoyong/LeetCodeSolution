@@ -16,6 +16,9 @@ Open brackets (支架) must be closed in the correct order.
 * @date: 22/04/12
 */
 object ValidParentheses {
+    /**
+     * 148 ms	33.9 MB
+     */
     fun isValid(s: String): Boolean {
         val stack = Stack<Char>()
 
@@ -33,13 +36,44 @@ object ValidParentheses {
         return stack.isEmpty()
     }
 
+    /**
+     * 669 ms	66.8 MB
+     */
+    fun isValid2(s: String): Boolean {
+        val lengthHalf = s.length / 2
+        var newS = s
+        for (i in 0..lengthHalf) {
+            newS = newS.replace(Regex("\\(\\)|\\[\\]|\\{}"), "")
+            if (newS.isEmpty()) {
+                return true
+            }
+        }
+        return newS.isEmpty()
+    }
+
+    /**
+     * 420 ms	90.4 MB
+     */
+    fun isValid3(s: String): Boolean {
+        val lengthHalf = s.length / 2
+        var newS = s
+        for (i in 0..lengthHalf) {
+            newS = newS.replace("()", "").replace("[]", "").replace("{}", "")
+            if (newS.isEmpty()) {
+                return true
+            }
+        }
+        return newS.isEmpty()
+    }
+
     @JvmStatic
     fun main(args: Array<String>) {
-        println(isValid(")"))
-        println(isValid("()"))
-        println(isValid("()[]{}"))
-        println(isValid("(]"))
-        println(isValid("([)]"))
-        println(isValid("{[]}"))
+        println(isValid3(")"))
+        println(isValid3("()"))
+        println(isValid3("{}"))
+        println(isValid3("()[]{}"))
+        println(isValid3("(]"))
+        println(isValid3("([)]"))
+        println(isValid3("{[()]}"))
     }
 }
