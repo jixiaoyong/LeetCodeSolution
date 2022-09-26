@@ -6,4 +6,8 @@ class TreeNode(var `val`: Int) {
 
     @JvmField
     var right: TreeNode? = null
+
+    override fun toString(): String {
+        return "{${`val`}(left:$left,right:$right)}"
+    }
 }
