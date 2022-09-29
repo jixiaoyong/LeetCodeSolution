@@ -1,6 +1,5 @@
 package hard
 
-import sun.management.MemoryUsageCompositeData.getMax
 import utils.TreeNode
 import utils.Utils
 
@@ -30,16 +29,18 @@ class BinaryTreeMaximumPathSum {
     fun maxPathSum(root: TreeNode?): Int {
         maxSum = root?.`val` ?: 0
 //        dfs(root)
-        getMaxValue(root)
+//        getMaxValue(root)
+        dfs2(root)
 
         return maxSum
     }
 
     private fun getMaxValue(r: TreeNode?): Int {
         if (r == null) return 0
-        val left = Math.max(0, getMaxValue(r.left))// 如果子树路径和为负则应当置0表示最大路径不包含子树
 
+        val left = Math.max(0, getMaxValue(r.left))// 如果子树路径和为负则应当置0表示最大路径不包含子树
         val right = Math.max(0, getMaxValue(r.right))
+
         maxSum = Math.max(maxSum, r.`val` + left + right) // 判断在该节点包含左右子树的路径和是否大于当前最大路径和
 
         return Math.max(left, right) + r.`val`
@@ -76,11 +77,34 @@ class BinaryTreeMaximumPathSum {
         // 此root子树某边的最大和（如果小于root则返回root），让父节点使用：
         return if (subMaxSum > 0) subMaxSum + root.`val` else root.`val`
     }
+
+    /// 解题思路：【关键】left、right为负值对root加和无意义，可舍弃；每次计算root当前子节点最大值，与总最大值比较
+    /// Runtime: 476 ms, faster than 23.84% of Kotlin online submissions for Binary Tree Maximum Path Sum.
+    /// Memory Usage: 47 MB, less than 36.05% of Kotlin online submissions for Binary Tree Maximum Path Sum.
+    private fun dfs2(root: TreeNode?): Int {
+        if (root == null ) {
+            return 0
+        }
+
+        val leftSum = Math.max(dfs2(root.left), 0)// 0表示不参与计算最大值（无意义）
+        val rightSum = Math.max(dfs2(root.right), 0)
+
+        // 最大子树边长总和
+        val subMaxSum = Math.max(leftSum, rightSum)
+
+        // 当前子树能够组合的最大值:可为left/right/root或者其之和
+        val currentMaxSum = leftSum + rightSum + root.`val`
+
+        maxSum = Math.max(currentMaxSum, maxSum)
+        // 此root子树某边的最大和（如果小于root则返回root），让父节点使用：
+        return subMaxSum + root.`val`
+    }
 }
 
 fun main() {
+    val tree = Utils.createTreeFromString("[-6,-2,-5,null,-4,-2]")
 //    val tree = Utils.createTreeFromString("[-2,-1]")
-    val tree = Utils.createTreeFromString("[-10,-1,-2,-4,-5]")
+//    val tree = Utils.createTreeFromString("[-10,-1,-2,-4,-5]")
 //    val tree = Utils.createTreeFromString("[10,-1]")
 //    val tree = Utils.createTreeFromString("[-11]")
 //    val tree = Utils.createTreeFromString("[11]")
