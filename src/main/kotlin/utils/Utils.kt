@@ -63,7 +63,7 @@ object Utils {
      ** 从类似[5,4,8,11,null,13,4,7,2,null,null,5,1]的数组中生成一个tree
      */
     fun createTreeFromString(str: String): TreeNode? {
-        val treeValueList = str.replace(" ","").replace("[", "").replace("]", "").split(",").map { it.toIntOrNull() }
+        val treeValueList = str.replace(" ", "").replace("[", "").replace("]", "").split(",").map { it.toIntOrNull() }
         if (str.isEmpty() || treeValueList.isEmpty()) {
             return null
         }
@@ -88,6 +88,31 @@ object Utils {
             }
         }
         return tree
+    }
+
+
+    /**
+     * 从[['1','2','3','4'],['5','6','7','8'],['9','1','1','2']]创建一个二维char数组
+     */
+    fun createCharMatrixFromString(str: String): Array<CharArray> {
+        var matrixRowMaxLength = 0
+        val matrixRowStrArr = str.replace("\'", "").replace("\"", "").replace(" ", "").replace("\n", "").split("],[")
+        matrixRowStrArr.map {
+            val arr = it.replace("[", "").replace("]", "").split(",")
+            if (arr.size > matrixRowMaxLength) {
+                matrixRowMaxLength = arr.size
+            }
+            arr.map { it }
+        }
+
+        val matrix = Array(matrixRowStrArr.size) { CharArray(matrixRowMaxLength) }
+        matrixRowStrArr.forEachIndexed { index, s ->
+            val arr = s.replace("[", "").replace("]", "").split(",")
+            arr.forEachIndexed { index1, s1 ->
+                matrix[index][index1] = s1.toCharArray().first()
+            }
+        }
+        return matrix
     }
 
     /**
@@ -116,12 +141,12 @@ object Utils {
 
     /**
      * 打印二叉树[tree], 从上到下，从左到右，带着枝杈的树
-               5
-            /     \
-         4           8
-       /           /   \
-      11          13      4
-     / \                 / \
+    5
+    /     \
+    4           8
+    /           /   \
+    11          13      4
+    / \                 / \
     7   2               5   1
 
      */
