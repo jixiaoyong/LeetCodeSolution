@@ -72,13 +72,53 @@ class SqrtX69 {
         return (max + min) / 2
     }
 
+
+    /**
+     * 变体：精确到0.001
+     * 依然采用二分法，只不过比较midPow的时候加入精度差
+     * 也可以在上面的mySqrtDichotomy中改动，当max - min == 1时，再求解精度为0.001
+     */
+    fun mySqrtFloatDichotomy(x: Int): Double {
+        if (x <= 1) {
+            return x.toDouble()
+        }
+
+        val precision = 0.001
+
+        var result: Double? = null
+
+        var min = 1.0
+        var max = x.toDouble()
+        while (min < max) {
+            val mid = (min + max) / 2.0
+            val midPow = mid * mid
+            val delta = midPow - x
+            if (Math.abs(delta) < precision) {
+                result = mid
+                break
+            } else if (delta < -precision) {
+                min = mid
+            } else {
+                max = mid
+            }
+
+        }
+
+        if (result == null) {
+            result = (max + min) / 2.0
+        }
+
+        val ceilResult = (result + precision).toInt()
+
+        return if (ceilResult * ceilResult == x) ceilResult * 1.0 else result
+    }
 }
 
 fun main() {
     val obj = SqrtX69()
     val random = Random(System.currentTimeMillis())
 
-    val nums = arrayListOf(0, 1, 2, 3, 4, 8, 9, 2147395600, 687771546, 1229654820, Int.MAX_VALUE)
+    val nums = arrayListOf(0, 1, 2, 3, 4, 8, 9, 81, 2147395600, 687771546, 1229654820, Int.MAX_VALUE)
 
     for (x in 0..20) {
         val num = random.nextInt(0, Int.MAX_VALUE)
@@ -86,8 +126,8 @@ fun main() {
 
     }
     nums.forEach { num ->
-        val mySqrt = obj.mySqrtDichotomy(num)
+        val mySqrt = obj.mySqrtFloatDichotomy(num)
         val sqrt = Math.sqrt(num.toDouble())
-        println("$num, mySqrt:${mySqrt}, sqrt:${sqrt},      is equal ${mySqrt == sqrt.toInt()}")
+        println("$num, mySqrt:${mySqrt}, sqrt:${sqrt},      is equal ${(mySqrt * 1000).toInt() == (sqrt * 1000).toInt()}")
     }
 }
