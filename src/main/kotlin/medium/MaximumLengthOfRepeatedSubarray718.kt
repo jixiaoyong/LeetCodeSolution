@@ -47,6 +47,50 @@ class MaximumLengthOfRepeatedSubarray718 {
 
         return max
     }
+
+
+    /**
+     * 滑动窗口
+     * 441 ms	41.1 MB
+     * 来自：https://leetcode.cn/problems/maximum-length-of-repeated-subarray/solution/zui-chang-zhong-fu-zi-shu-zu-by-leetcode-solution/
+     * 思路是两个数组的重复序列位置不一致（未对齐），所以遍历无法直接查找到，但是如果能够将其移动X格，那么在遍历的时候能够很方便的找到重复的序列
+     * 时间复杂度是O(M+N)*min(M,N)
+     * 空间复杂度是O(1)
+     */
+    fun findLengthSlide(nums1: IntArray, nums2: IntArray): Int {
+        var result = 0
+
+        val min: IntArray
+        val max: IntArray
+        if (nums1.size > nums2.size) {
+            max = nums1
+            min = nums2
+        } else {
+            max = nums2
+            min = nums1
+        }
+
+        // 将min末尾放置到max的最右边，然后将min向右滑动，一直到min的开头在max的末尾
+        // 在此过程对比计算最长的重复子数组
+        for (i in -(min.size - 1) until max.size) {
+            var len = 0
+            for (j in 0 until min.size) {
+                if (i + j > max.size - 1 || i + j < 0) {
+                    continue
+                }
+                if (min[j] == max[j + i]) {
+                    len++
+                } else {
+                    len = 0
+                }
+                result = Math.max(result, len)
+            }
+        }
+
+        return result
+    }
+
+
 }
 
 fun main() {
@@ -62,6 +106,7 @@ fun main() {
 
     pairs.forEach {
         print(obj.findLength(it.first, it.second))
+        print(" - ${obj.findLengthSlide(it.first, it.second)}")
         println(":      ${it.first.joinToString()}-----${it.second.joinToString()}")
 
     }
