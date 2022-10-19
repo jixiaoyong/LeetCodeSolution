@@ -27,7 +27,12 @@ class SearchInRotatedSortedArray {
 
     /**
      * 263 ms	35.7 MB
-     * 二分法变体
+     * 二分法*变体
+     * 思路是：将长度为len的nums一分为二，则必然存在三种情况：
+     * 1. k > len/2 ，那么mid右边一定为有序数组，左侧为旋转排序数组：target如果不在begin到mid的话，那么一定不在右侧，所以接下来在左侧数组查找
+     * 2. k < len/2 ， 那么mid左边一定为有序数组，右侧为旋转排序数组：target如果不在mid到end的话，一定不在左侧，在右侧查找
+     * 3. k == len/2，那么左右两边都为有序数组，并且左边大于右边，与情况1或2一起处理即可
+     * 此外需要处理end-begin==1的情况，及时退出循环
      * 时间复杂度： O(logn)
      * 空间复杂度： O(1)
      */
@@ -42,6 +47,7 @@ class SearchInRotatedSortedArray {
         var end = nums.size - 1
 
         while (begin < end) {
+            // 提前处理，检测begin和end，针对例如[3,1]的情况
             if (end - begin == 1) {
                 index = when (target) {
                     nums[begin] -> begin
