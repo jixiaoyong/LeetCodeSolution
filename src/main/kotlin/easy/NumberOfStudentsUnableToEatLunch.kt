@@ -66,7 +66,7 @@ class NumberOfStudentsUnableToEatLunch {
      * 269 ms	34.8 MB
      * https://leetcode.cn/problems/number-of-students-unable-to-eat-lunch/solution/wu-fa-chi-wu-can-de-xue-sheng-shu-liang-fv3f5/
      * 来自官方题解的思路，学生的顺序不影响最终结果（学生会在不断排到队伍后方的过程打乱顺序），实际能吃到与否只与学生中喜欢方的或圆的数量，
-     * 以及当前第一个三明治是方的或圆有关，如果当前没有学生喜欢第一个三明治则终止
+     * 以及当前第一个三明治是方的或圆有关，如果当前没有学生喜欢当前的三明治则终止
      * 时间复杂度O(N)
      * 空间复杂度O(1)
      */
