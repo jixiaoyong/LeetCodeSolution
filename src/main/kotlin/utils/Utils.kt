@@ -11,7 +11,10 @@ object Utils {
         if (source.isEmpty() || source.isBlank() || "[]" == source) {
             return null
         }
-        val linkedListStr = source.trim().replace("[", "").replace("]", "").split(",").map { it.toInt() }
+        val linkedListStr = source.trim().replace("[", "")
+            .replace("]", "")
+            .split(",")
+            .map { it.trim().toInt() }
         val linkedList: ListNode? = ListNode(linkedListStr.first())
         var currentNode = linkedList
         linkedListStr.forEachIndexed { index, i ->
