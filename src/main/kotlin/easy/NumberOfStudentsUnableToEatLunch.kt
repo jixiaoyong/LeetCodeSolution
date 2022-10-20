@@ -71,7 +71,7 @@ class NumberOfStudentsUnableToEatLunch {
      * 空间复杂度O(1)
      */
     fun countStudents2(students: IntArray, sandwiches: IntArray): Int {
-        var num1 = Arrays.stream(students).sum()
+        var num1 = Arrays.stream(students).sum()//此方法是将students中的数字相加，因为只有1和0，所以相加之和就为1之和
         var num0 = students.size - num1
 
         for (x in 0 until sandwiches.size) {
