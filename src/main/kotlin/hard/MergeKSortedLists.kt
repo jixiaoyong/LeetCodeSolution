@@ -24,6 +24,8 @@ class MergeKSortedLists {
 
     /**
      * 458 ms	47.8 MB
+     * 思路是：将所有链表的第一个字符放入PriorityQueue中，取出最小的值放入新链表，将最小值对应的链表的头部node再放入PriorityQueue中；
+     * 根据PriorityQueue的特性，每次remove取出的值就是最小值；所以不断重复之后，直到PriorityQueue为空，lists中所有的链表节点完成排序。
      * 时间复杂度O(N*LogK) N是链表的所有node数目，每次从PriorityQueue取出最小值的复杂度是O(LogK)
      * 空间复杂度O(K)，需要K个空间同时存储多个链表的头部以供比较
      */
