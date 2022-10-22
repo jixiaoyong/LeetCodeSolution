@@ -24,11 +24,18 @@ class MinimumWindowSubstring {
 
     /**
      * 最长耗时7356.7ms，超时
+     * 优化之后 440 ms	58.8 MB
+     * 优化点在于判断已经获取的字符串是否满足涵盖t所有字符，优化前是每次遍历t的char和已经获取的字符串charCountMap中对比个数一致则true
+     * 优化之后：计算已经获取的字符串中涵盖t的char的个数，每中char计数最大等于其在t中的个数，当向右移left时如果删除的是t中的字符，
+     * 并且删除之后个数小于t中个数，则count-1，以此保证count和总的覆盖了t中字符的个数一致；这样在[hasT]中判断已经获取的字符串是否满足
+     * 涵盖t所有字符时，只需判断count是否等于t的长度[tLen]即可。这样遍历每个s中字符的复杂度从O(N)降到了O(1)，
      */
     val tCharCountMap = hashMapOf<Char, Int>()
+    var count = 0
+    var tLen = 0
     fun minWindow(s: String, t: String): String {
         val sLen = s.length
-        val tLen = t.length
+        tLen = t.length
 
         var result = ""
         if (tLen > sLen) {
@@ -36,6 +43,8 @@ class MinimumWindowSubstring {
         }
 
         tCharCountMap.clear()
+        count = 0
+
         t.forEach {
             val charCount = tCharCountMap.getOrDefault(it, 0)
             tCharCountMap.put(it, charCount + 1)
@@ -45,6 +54,9 @@ class MinimumWindowSubstring {
         var right = 1
         val charCountMap = hashMapOf<Char, Int>()
         charCountMap.put(s[left], 1)
+        if (tCharCountMap.getOrDefault(s[left],0) > 0) {
+            count = 1
+        }
         var minWindowSize = Int.MAX_VALUE
 
         while (left < right) {
@@ -60,15 +72,22 @@ class MinimumWindowSubstring {
 
             val leftChar = s[left]
 
-            // todo hasT为优化点
+            // hasT为优化点
             if (!hasT(charCountMap, t)) {
                 right++
                 if (right > sLen) {
                     break
                 }
+
                 rightChar?.let {
-                    charCountMap.put(it, charCountMap.getOrDefault(rightChar, 0) + 1)
+                    val charCount = charCountMap.getOrDefault(rightChar, 0) + 1
+                    charCountMap.put(it, charCount)
+                    if (tCharCountMap.getOrDefault(rightChar, 0) >= charCount) {
+                        // 如果加入的是t的字符，并且在范围内，则有效，count+1
+                        count++
+                    }
                 }
+
             } else {
                 val windowLen = right - left
                 if (windowLen < minWindowSize) {
@@ -80,19 +99,28 @@ class MinimumWindowSubstring {
                 }
 
                 left++
-                charCountMap.put(leftChar, charCountMap.getOrDefault(leftChar, 1) - 1)
+                val charCount = charCountMap.getOrDefault(leftChar, 1) - 1
+
+                charCountMap.put(leftChar, charCount)
+                if (tCharCountMap.getOrDefault(leftChar, 0) > charCount) {
+                    // 如果加入的是t的字符，并且在范围内，则有效，count+1
+                    count--
+                }
             }
         }
 
         return result
     }
 
+    /**
+     * 检测[hashMap]中保存的字符是否已经包含了[t]的全部文字
+     */
     private fun hasT(hashMap: HashMap<Char, Int>, t: String): Boolean {
-        t.forEach {
-            if (hashMap.getOrDefault(it, 0) < tCharCountMap[it]!!) {
-                return false
-            }
+
+        if (count != tLen) {
+            return false
         }
+
         return true
     }
 }
@@ -101,12 +129,12 @@ fun main() {
     val obj = MinimumWindowSubstring()
 
     val cases = mutableListOf(
-//        Pair("a", "a"),// "a"
-//        Pair("a", "aa"),// ""
-//        Pair("aaa", "aa"),// "aa"
-//        Pair("aaaa", "aa"),// "aa"
-//        Pair("aa", "aa"),// "aa"
-//        Pair("ADOBECODEBANC", "ABC"), // "BANC"
+        Pair("ADOBECODEBANC", "ABC"), // "BANC"
+        Pair("a", "a"),// "a"
+        Pair("a", "aa"),// ""
+        Pair("aaa", "aa"),// "aa"
+        Pair("aaaa", "aa"),// "aa"
+        Pair("aa", "aa"),// "aa"
         veryLargePair,
         veryLargePair,
         veryLargePair,
@@ -126,7 +154,8 @@ fun main() {
         println("$result --->  s: ${it.first} t: ${it.second}")
     }
 
-    println("*10 耗时${(System.currentTimeMillis() - timeMs) / 1000}s")
+    // *10 耗时203s --> 优化后 *10 耗时1140ms
+    println("*10 耗时${(System.currentTimeMillis() - timeMs) }ms")
 }
 
 
