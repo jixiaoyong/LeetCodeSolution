@@ -27,15 +27,16 @@ class MinimumWindowSubstring {
      * 优化之后 440 ms	58.8 MB
      * 优化点在于判断已经获取的字符串是否满足涵盖t所有字符，优化前是每次遍历t的char和已经获取的字符串charCountMap中对比个数一致则true
      * 优化之后：计算已经获取的字符串中涵盖t的char的个数，每中char计数最大等于其在t中的个数，当向右移left时如果删除的是t中的字符，
-     * 并且删除之后个数小于t中个数，则count-1，以此保证count和总的覆盖了t中字符的个数一致；这样在[hasT]中判断已经获取的字符串是否满足
+     * 并且删除之后个数小于t中个数，则count-1，以此保证count和总的覆盖了t中字符的个数一致；这样在添加新char时判断已经获取的字符串是否满足
      * 涵盖t所有字符时，只需判断count是否等于t的长度[tLen]即可。这样遍历每个s中字符的复杂度从O(N)降到了O(1)，
+     * 时间复杂度O(N+M)，其中M、N分别为s，t的长度
+     * 空间复杂度O(C) 两个hashMap用于保存字符对应个数，最大长度是字符集的大小
      */
     val tCharCountMap = hashMapOf<Char, Int>()
-    var count = 0
-    var tLen = 0
+
     fun minWindow(s: String, t: String): String {
         val sLen = s.length
-        tLen = t.length
+        val tLen = t.length
 
         var result = ""
         if (tLen > sLen) {
@@ -43,7 +44,7 @@ class MinimumWindowSubstring {
         }
 
         tCharCountMap.clear()
-        count = 0
+        var count = 0
 
         t.forEach {
             val charCount = tCharCountMap.getOrDefault(it, 0)
@@ -52,75 +53,139 @@ class MinimumWindowSubstring {
 
         var left = 0
         var right = 1
+        var resultL = 0
+        var resultR = 0
+
         val charCountMap = hashMapOf<Char, Int>()
         charCountMap.put(s[left], 1)
-        if (tCharCountMap.getOrDefault(s[left],0) > 0) {
+        if (tCharCountMap.getOrDefault(s[left], 0) > 0) {
             count = 1
         }
         var minWindowSize = Int.MAX_VALUE
 
         while (left < right) {
-            if (sLen - left < tLen) {
-                break
-            }
-            val rightChar = if (right <= sLen - 1) {
-                s[right]
-            } else {
-                right = sLen
-                null
-            }
 
-            val leftChar = s[left]
-
-            // hasT为优化点
-            if (!hasT(charCountMap, t)) {
-                right++
-                if (right > sLen) {
+            if (count != tLen) {
+                val rightChar = if (right <= sLen - 1) {
+                    s[right++]
+                } else {
+                    // 如果right到了s最右侧+1（也就是超出范围）未找到覆盖t全部字符的字符串，那么应该退出
                     break
                 }
 
-                rightChar?.let {
-                    val charCount = charCountMap.getOrDefault(rightChar, 0) + 1
-                    charCountMap.put(it, charCount)
-                    if (tCharCountMap.getOrDefault(rightChar, 0) >= charCount) {
-                        // 如果加入的是t的字符，并且在范围内，则有效，count+1
-                        count++
-                    }
+                val charCount = charCountMap.getOrDefault(rightChar, 0) + 1
+                charCountMap.put(rightChar, charCount)
+                if (tCharCountMap.getOrDefault(rightChar, 0) >= charCount) {
+                    // 如果加入的是t的字符，并且在范围内，则有效，count+1
+                    count++
                 }
 
             } else {
+
                 val windowLen = right - left
                 if (windowLen < minWindowSize) {
                     minWindowSize = windowLen
-                    result = s.substring(left, right)
+                    resultL = left
+                    resultR = right
                     if (windowLen == tLen) {
+                        result = s.substring(resultL, resultR)
                         return result
                     }
                 }
 
-                left++
+                val leftChar = s[left]
+
                 val charCount = charCountMap.getOrDefault(leftChar, 1) - 1
 
                 charCountMap.put(leftChar, charCount)
                 if (tCharCountMap.getOrDefault(leftChar, 0) > charCount) {
-                    // 如果加入的是t的字符，并且在范围内，则有效，count+1
+                    // 如果减去的是t的字符，并且在范围内，则有效，count-1
                     count--
+                }
+
+                left++
+                if (sLen - left < tLen) {
+                    break
                 }
             }
         }
 
-        return result
+        return s.substring(resultL, resultR)
+    }
+
+
+    /**
+     * LeetCode 官方题解如下，也是滑窗解法，也是采用两个hashMap对比字符个数，但是未超时
+     *  时间复杂度 O(C⋅∣s∣+∣t∣)
+     *  空间复杂度 O(C)
+     *  276 ms	37.6 MB
+     */
+    var ori: MutableMap<Char?, Int?>? = HashMap()
+    var cnt: MutableMap<Char, Int> = HashMap()
+
+    fun minWindowLeetCode(s: String, t: String): String {
+        val tLen = t.length
+        for (i in 0 until tLen) {
+            val c = t[i]
+            ori!![c] = ori!!.getOrDefault(c, 0)!! + 1
+        }
+        var l = 0
+        var r = -1
+        var len = Int.MAX_VALUE
+        var ansL = -1
+        var ansR = -1
+        val sLen = s.length
+        while (r < sLen) {
+            // 此处在添加right的同时也在尝试移除左侧数字，以减少循环次数
+            ++r
+            if (r < sLen && ori!!.containsKey(s[r])) {
+                // 只添加ori即t中有的字符并计数
+                cnt[s[r]] = cnt.getOrDefault(s[r], 0) + 1
+            }
+            while (check() && l <= r) {
+                // 滑窗覆盖了t所有字符，尝试尽可能缩短滑窗长度
+                if (r - l + 1 < len) {
+                    len = r - l + 1
+                    ansL = l
+                    ansR = l + len
+                }
+                if (ori!!.containsKey(s[l])) {
+                    cnt[s[l]] = cnt.getOrDefault(s[l], 0) - 1
+                }
+                ++l
+            }
+        }
+        return if (ansL == -1) "" else s.substring(ansL, ansR)
     }
 
     /**
-     * 检测[hashMap]中保存的字符是否已经包含了[t]的全部文字
+     * 遍历记录滑窗覆盖字符个数的[cnt]中各个字符大小是否覆盖记录t各个字符串的[ori]
+     * @return true 表示当前滑窗覆盖了t的所有字符
+     */
+    fun check(): Boolean {
+        val iter: Iterator<*> = ori!!.entries.iterator()
+        while (iter.hasNext()) {
+            val (key1, value) = iter.next() as Map.Entry<*, *>
+            val key = key1 as Char
+            val `val` = value as Int
+            if (cnt.getOrDefault(key, 0) < `val`) {
+                return false
+            }
+        }
+        return true
+    }
+
+    /**
+     * [check]方法与我之前超时的[hasT]方法对比：
+     * [check]方法时间复杂度为O(C),Char为字符集长度；
+     * 而[hasT]时间复杂度为O(N),N为t长度（最大为10^5），可能远大于C，所以才会超时
      */
     private fun hasT(hashMap: HashMap<Char, Int>, t: String): Boolean {
-
-        if (count != tLen) {
-            return false
+        t.forEach {
+            if (hashMap.getOrDefault(it, 0) < tCharCountMap[it]!!) {
+                return false
+            }
         }
-
         return true
     }
 }
@@ -135,17 +200,17 @@ fun main() {
         Pair("aaa", "aa"),// "aa"
         Pair("aaaa", "aa"),// "aa"
         Pair("aa", "aa"),// "aa"
-        veryLargePair,
-        veryLargePair,
-        veryLargePair,
-        veryLargePair,
-        veryLargePair,
-        veryLargePair,
-        veryLargePair,
-        veryLargePair,
-        veryLargePair,
-        veryLargePair,
-        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
+//        veryLargePair,
     )
 
     val timeMs = System.currentTimeMillis()
@@ -154,8 +219,8 @@ fun main() {
         println("$result --->  s: ${it.first} t: ${it.second}")
     }
 
-    // *10 耗时203s --> 优化后 *10 耗时1140ms
-    println("*10 耗时${(System.currentTimeMillis() - timeMs) }ms")
+    // *10 耗时203s --> 优化后 *10 耗时192ms
+    println("*10 耗时${(System.currentTimeMillis() - timeMs)}ms")
 }
 
 
