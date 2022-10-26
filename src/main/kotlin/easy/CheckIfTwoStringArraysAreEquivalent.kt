@@ -51,7 +51,7 @@ class CheckIfTwoStringArraysAreEquivalent {
 
         }
 
-        return index1 == wordCount1 && index2 == wordCount2 && subIndex1 ==0 && subIndex2 == 0
+        return index1 == wordCount1 && index2 == wordCount2 && subIndex1 == 0 && subIndex2 == 0
     }
 
 }
@@ -60,8 +60,9 @@ fun main() {
     val obj = CheckIfTwoStringArraysAreEquivalent()
 
     val cases = mutableListOf(
-        Pair(arrayOf("a",), arrayOf("a", "bc")),
-        Pair(arrayOf("a",), arrayOf("a", "aa")),
+        Pair(arrayOf("a"), arrayOf("aa", "bc")),
+        Pair(arrayOf("a"), arrayOf("a", "bc")),
+        Pair(arrayOf("a"), arrayOf("a", "aa")),
         Pair(arrayOf("ab", "c"), arrayOf("a", "bc")),
         Pair(arrayOf("a", "cb"), arrayOf("ab", "c")),
         Pair(arrayOf("abc", "d", "defg"), arrayOf("abcddefg")),
