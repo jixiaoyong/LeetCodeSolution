@@ -66,8 +66,36 @@ object ValidParentheses {
         return newS.isEmpty()
     }
 
+    /**
+     * 168 ms	33.1 MB
+     * 时间复杂度：O(n)，其中 n 是字符串 s 的长度
+     * 空间复杂度：O(n+∣Σ∣)，其中 Σ 表示字符集，本题中字符串只包含 6 种括号，∣Σ∣=6。
+     * https://leetcode.cn/problems/valid-parentheses/solution/you-xiao-de-gua-hao-by-leetcode-solution/
+     */
+    fun isValidLeetcode(s: String): Boolean {
+        if (s.length % 2 == 1) {
+            return false
+        }
+
+        val map = hashMapOf(Pair(']', '['), Pair(')', '('), Pair('}', '{'))
+
+        val stack = Stack<Char>()
+        for (c in s) {
+            if (!map.containsKey(c)) {
+                stack.push(c)
+            } else if (stack.isEmpty() || map[c] != stack.peek()) {
+                return false
+            } else {
+                stack.pop()
+            }
+        }
+
+        return stack.isEmpty()
+    }
+
     @JvmStatic
     fun main(args: Array<String>) {
+        println(isValid3("}["))
         println(isValid3(")"))
         println(isValid3("()"))
         println(isValid3("{}"))
