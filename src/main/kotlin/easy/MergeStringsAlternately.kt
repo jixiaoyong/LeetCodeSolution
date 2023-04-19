@@ -98,6 +98,28 @@ class MergeStringsAlternately {
 
         return String(sb)
     }
+
+    fun mergeAlternately202304(word1: String, word2: String): String {
+        val len1 = word1.length
+        val len2 = word2.length
+
+        val newStringArr = CharArray(len1 + len2)
+
+        var curLen = 0
+        var index1 = 0
+        var index2 = 0
+
+        while(curLen<len1+len2){
+            if(index1<len1){
+                newStringArr[curLen++]=word1[index1++]
+            }
+            if(index2<len2){
+                newStringArr[curLen++]=word2[index2++]
+            }
+        }
+
+        return String(newStringArr)
+    }
 }
 
 fun main() {
@@ -122,7 +144,7 @@ fun main() {
     cases.add(Pair(largestSb1.toString(), largestSb2.toString()))
 
     cases.forEach {
-        val result = obj.mergeAlternatelyTwoIndex(it.first, it.second)
+        val result = obj.mergeAlternately202304(it.first, it.second)
         println("$result --> $it")
     }
 }
